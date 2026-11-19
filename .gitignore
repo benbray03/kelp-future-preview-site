@@ -1,0 +1,7 @@
+data-raw/
+*.tif
+*.rds
+.Rproj.user/
+.Rhistory
+.RData
+.DS_Store
