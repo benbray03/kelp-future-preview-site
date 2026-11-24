@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kelp Future Preview</title>
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css">
-<script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<title>About · Kelp Future Preview</title>
 <style>
   body { margin: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f2f6f6; color: #3d5a5f; }
   header { background: #0a5c73; color: #fff; padding: 16px 28px; display: flex; align-items: baseline; gap: 16px; }
@@ -13,94 +10,64 @@
   header nav { margin-left: auto; }
   header nav a { color: rgba(255,255,255,.75); margin-left: 18px; font-weight: 600; text-decoration: none; }
   header nav a.active { color: #fff; }
-  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 16px; padding: 16px; }
-  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(10,92,115,.12); padding: 16px 20px; }
-  .label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; margin: 14px 0 8px; }
-  .label:first-child { margin-top: 0; }
-  .plot { height: 200px; }
-  .controls { display: grid; grid-template-columns: 1fr 1.3fr 1.7fr; gap: 20px; margin-bottom: 16px; }
-  #species button { border: 1px solid #0a5c73; background: #fff; color: #0a5c73; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 15px; }
-  #species button:hover { background: #d6ecec; }
-  #species button.active { background: #0a5c73; color: #fff; }
-  select { width: 100%; padding: 8px; border: 1.5px solid #d3e3e5; border-radius: 6px; font-size: 15px; }
-  .year-row { display: flex; align-items: center; gap: 10px; }
-  .year-row input { flex: 1; accent-color: #0a5c73; }
-  #play { border: none; background: #0a5c73; color: #fff; border-radius: 6px; width: 36px; height: 30px; cursor: pointer; }
-  .ticks { display: flex; justify-content: space-between; font-size: 12px; }
-  .map-card { padding: 0; overflow: hidden; }
-  #map-title { padding: 14px 20px; font-size: 20px; font-weight: 700; color: #0a5c73; border-bottom: 1px solid #eef2f2; }
-  .map-wrap { position: relative; height: 720px; }
-  #map { position: absolute; inset: 0; }
-  .float { position: absolute; z-index: 2; background: rgba(255,255,255,.95); border-radius: 8px;
-           box-shadow: 0 1px 6px rgba(0,0,0,.25); padding: 10px 14px; font-size: 13px; }
-  #layers { left: 12px; bottom: 24px; }
-  #layers label { display: block; margin: 4px 0; }
-  #legend { right: 12px; bottom: 24px; width: 190px; }
-  #leg-bar { height: 12px; margin: 6px 0 2px; }
-  #lat50-box { right: 12px; bottom: 110px; line-height: 1.5; }
-  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
-  dialog { border: none; border-radius: 10px; max-width: 560px; line-height: 1.6; }
-  dialog button { background: #0a5c73; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
-  footer { padding: 0 16px 16px; font-size: 12px; }
-  @media (max-width: 900px) { .layout, .controls { grid-template-columns: 1fr; } }
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(10,92,115,.12);
+          max-width: 860px; margin: 24px auto; padding: 32px 40px; line-height: 1.8; font-size: 17px; }
+  h2 { color: #0a5c73; margin: 0 0 4px; font-size: 30px; }
+  .tagline { color: #5b7a80; font-style: italic; font-size: 19px; margin-bottom: 24px; }
+  h3 { color: #0a5c73; font-size: 22px; margin-top: 32px; }
+  a { color: #0a5c73; }
+  .note { background: #fdf3e7; border-left: 4px solid #e0913a; padding: 12px 18px; border-radius: 4px; margin: 18px 0; }
+  .ref { padding-left: 2em; text-indent: -2em; font-size: 15px; line-height: 1.7; }
 </style>
 </head>
 <body>
 <header>
   <h1>Kelp Forecasting</h1><span>Projected habitat suitability along the California coast</span>
-  <nav><a href="about.html">About</a><a href="index.html" class="active">Maps</a></nav>
+  <nav><a href="index.html" class="active">About</a><a href="methods.html">Methods</a><a href="map.html">Maps</a></nav>
 </header>
 
-<div class="layout">
-  <aside class="card">
-    <div class="label" id="hist-label"></div><div class="plot"><canvas id="hist"></canvas></div>
-    <div class="label" id="trend-label"></div><div class="plot"><canvas id="trend"></canvas></div>
-    <div class="label" id="lat50-label"></div><div class="plot"><canvas id="lat50"></canvas></div>
-  </aside>
-  <main>
-    <div class="card controls">
-      <div><div class="label">Species</div><div id="species"></div></div>
-      <div><div class="label">Variable</div><select id="var"></select></div>
-      <div><div class="label">Year: <span id="year-label"></span></div>
-        <div class="year-row"><button id="play" aria-label="Play">&#9654;</button>
-          <input id="year" type="range" min="0" step="1" value="0"></div>
-        <div class="ticks"><span id="year-min"></span><span id="year-max"></span></div></div>
-    </div>
-    <div class="card map-card">
-      <div id="map-title"></div>
-      <div class="map-wrap">
-        <div id="map"></div>
-        <div class="float" id="layers"><div class="label">Layers</div>
-          <label><input type="checkbox" id="show_mpas" checked> MPA boundaries</label>
-          <label><input type="checkbox" id="show_lat50" checked> 50% density line</label>
-          <label><input type="checkbox" id="show_class"> Restoration class</label>
-          <div id="class-legend" hidden>
-            <div><span class="swatch" style="background:#ed1c25"></span>High</div>
-            <div><span class="swatch" style="background:#ffca18"></span>Mid</div>
-            <div><span class="swatch" style="background:#12d045"></span>Low</div>
-            <div><span class="swatch" style="background:#01a9f3"></span>Very low</div>
-          </div>
-        </div>
-        <div class="float" id="lat50-box"></div>
-        <div class="float" id="legend"><b id="leg-title"></b><div id="leg-bar"></div>
-          <span id="leg-lo"></span><span id="leg-hi" style="float:right"></span></div>
-      </div>
-    </div>
-  </main>
-</div>
-<footer id="footer"></footer>
+<div class="card">
+  <h2>Kelp Future Preview</h2>
+  <div class="tagline">An interactive mapping tool for exploring future projections of kelp density</div>
 
-<dialog id="intro">
+  <h3>About</h3>
+  <p>Kelp Future Preview was created by the <a href="https://labs.eemb.ucsb.edu/caselle/jennifer/" target="_blank" rel="noopener">Caselle Lab</a> at the University of California, Santa Barbara through a <a href="https://caseagrant.ucsd.edu/our-work/research-projects/proactive-approach-kelp-restoration-ca-forecasting-kelp-loss-and-optimal" target="_blank" rel="noopener">California Sea Grant funded project</a>.</p>
+  <p>Kelp Future Preview (henceforth "the app") is an interactive mapping tool for visualizing future projections of <strong>giant kelp</strong> (<em>Macrocystis pyrifera</em>) and <strong>bull kelp</strong> (<em>Nereocystis luetkeana</em>) density along the coast of California through 2100. The future kelp maps are based on 20+ years of in-situ kelp forest monitoring through the Partnership for Interdisciplinary Studies of Coastal Oceans (PISCO) and Reef Check, combined with California-specific environmental drivers of kelp density derived from three global earth-ocean-atmosphere models, also called Earth System Models (ESMs). Maps are displayed at 300 m resolution and allow users to interactively select between kelp density and relevant environmental drivers at 5-year increments.</p>
+  <p>The intended users of the app are marine scientists, resource managers, marine spatial planners, and community members.</p>
+  <p>The app can be used to gain insight into the potential trajectories of giant and bull kelp in California. Future projections are grouped into 5-year increments to reduce focus on predictions for a specific year and location. These projections should not be taken to mean that a specific density will be observed at a particular future time point. Results shown are the ensemble mean of three ESMs.</p>
+  <div class="note"><strong>Note:</strong> Specific values should not be extracted from the map and used in isolation to support state public comment or petitions.</div>
+
   <h3>How to Use the Map</h3>
-  <ul>
-    <li>Choose a species using the buttons above the map.</li>
-    <li>Select a variable to display: either the modeled kelp density, or one of the underlying environmental predictors.</li>
+  <ol>
+    <li>Choose one of two species using the species buttons.</li>
+    <li>Choose a map layer to display. You may select modeled kelp density or one of the underlying environmental predictors.</li>
     <li>Use the year slider (or press play) to step through projected years.</li>
-    <li>The side panel plots update to summarize the currently displayed layer.</li>
-    <li>The orange dashed line marks the 50% density latitude: half of the species' predicted kelp density lies south of it and half north. The grey dotted line shows where it was in the first projection year.</li>
+    <li>The left-side panel plots update to summarize the currently displayed layer.</li>
+    <li>Toggle additional static layers on or off, including the network of marine protected areas (MPAs).</li>
+    <li>The <strong>orange dashed line</strong> marks the 50% density latitude: half of the species' predicted kelp density lies south of it and half north. The <strong>grey dotted line</strong> shows where it was in the first projection year.</li>
+  </ol>
+
+  <h3>Versioning</h3>
+  <p><strong>Version 0.0.1</strong>: Released November 09, 2026. This version is a beta release. Please forward comments or questions to <a href="mailto:abalbar@ucsb.edu">abalbar@ucsb.edu</a>.</p>
+
+  <h3>License</h3>
+  <p>This project is licensed under the MIT License.</p>
+
+  <h3>Acknowledgements</h3>
+  <p>This project was funded by California Sea Grant and the Ocean Protection Council under <em>R/HCEOPC-42: A proactive approach to kelp restoration in CA: forecasting kelp loss and optimal kelp restoration times</em>. Funding support was provided to Jenn Caselle at the University of California, Santa Barbara.</p>
+
+  <h3>Contributors</h3>
+  <ul>
+    <li><strong>Benjamin (Patrick) Bray</strong> (<a href="https://github.com/benbray03" target="_blank" rel="noopener">@benbray03</a>): App design, programming, development, and maintenance</li>
+    <li><strong>Jenn Caselle</strong>: Initial conception, acquisition of funding, app improvements</li>
+    <li><strong>Arieanna Balbar</strong> (<a href="https://github.com/abalbar" target="_blank" rel="noopener">@abalbar</a>): Data analysis, app development, improvements</li>
+    <li><strong>Anita Giraldo-Ospina</strong>: App improvements</li>
+    <li><strong>Tom Bell</strong>: App improvements</li>
   </ul>
-  <form method="dialog"><button>Got it</button></form>
-</dialog>
-<script src="app.js"></script>
+
+  <h3>References</h3>
+  <p class="ref">Giraldo-Ospina, A., T. Bell, M. H. Carr, and J. E. Caselle. 2025. Drivers of spatiotemporal variability in a marine foundation species. <em>Ecological Applications</em> 35:e3092.</p>
+  <p class="ref">Pozo Buil, M., M. G. Jacox, J. Fiechter, M. A. Alexander, S. J. Bograd, E. N. Curchitser, C. A. Edwards, R. R. Rykaczewski, and C. A. Stock. 2021. A dynamically downscaled ensemble of future projections for the California Current System. <em>Frontiers in Marine Science</em> 8:612874.</p>
+</div>
 </body>
 </html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kelp Future Preview</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  body { margin: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f2f6f6; color: #3d5a5f; }
+  header { background: #0a5c73; color: #fff; padding: 16px 28px; display: flex; align-items: baseline; gap: 16px; }
+  header h1 { margin: 0; font-size: 28px; }
+  header nav { margin-left: auto; }
+  header nav a { color: rgba(255,255,255,.75); margin-left: 18px; font-weight: 600; text-decoration: none; }
+  header nav a.active { color: #fff; }
+  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 16px; padding: 16px; }
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(10,92,115,.12); padding: 16px 20px; }
+  .label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; margin: 14px 0 8px; }
+  .label:first-child { margin-top: 0; }
+  .plot { height: 200px; }
+  .controls { display: grid; grid-template-columns: 1fr 1.3fr 1.7fr; gap: 20px; margin-bottom: 16px; }
+  #species button { border: 1px solid #0a5c73; background: #fff; color: #0a5c73; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 15px; }
+  #species button:hover { background: #d6ecec; }
+  #species button.active { background: #0a5c73; color: #fff; }
+  select { width: 100%; padding: 8px; border: 1.5px solid #d3e3e5; border-radius: 6px; font-size: 15px; }
+  .year-row { display: flex; align-items: center; gap: 10px; }
+  .year-row input { flex: 1; accent-color: #0a5c73; }
+  #play { border: none; background: #0a5c73; color: #fff; border-radius: 6px; width: 36px; height: 30px; cursor: pointer; }
+  .ticks { display: flex; justify-content: space-between; font-size: 12px; }
+  .map-card { padding: 0; overflow: hidden; }
+  #map-title { padding: 14px 20px; font-size: 20px; font-weight: 700; color: #0a5c73; border-bottom: 1px solid #eef2f2; }
+  .map-wrap { position: relative; height: 720px; }
+  #map { position: absolute; inset: 0; }
+  .float { position: absolute; z-index: 2; background: rgba(255,255,255,.95); border-radius: 8px;
+           box-shadow: 0 1px 6px rgba(0,0,0,.25); padding: 10px 14px; font-size: 13px; }
+  #layers { left: 12px; bottom: 24px; }
+  #layers label { display: block; margin: 4px 0; }
+  #legend { left: 12px; top: 12px; width: 190px; }
+  #leg-bar { height: 12px; margin: 6px 0 2px; }
+  #lat50-box { right: 12px; bottom: 24px; line-height: 1.5; }
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  dialog { border: none; border-radius: 10px; max-width: 560px; line-height: 1.6; }
+  dialog button { background: #0a5c73; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
+  footer { padding: 0 16px 16px; font-size: 12px; }
+  @media (max-width: 900px) { .layout, .controls { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kelp Forecasting</h1><span>Projected habitat suitability along the California coast</span>
+  <nav><a href="index.html">About</a><a href="methods.html">Methods</a><a href="map.html" class="active">Maps</a></nav>
+</header>
+
+<div class="layout">
+  <aside class="card">
+    <div class="label" id="hist-label"></div><div class="plot"><canvas id="hist"></canvas></div>
+    <div class="label" id="trend-label"></div><div class="plot"><canvas id="trend"></canvas></div>
+    <div class="label" id="lat50-label"></div><div class="plot"><canvas id="lat50"></canvas></div>
+  </aside>
+  <main>
+    <div class="card controls">
+      <div><div class="label">Species</div><div id="species"></div></div>
+      <div><div class="label">Variable</div><select id="var"></select></div>
+      <div><div class="label">Year: <span id="year-label"></span></div>
+        <div class="year-row"><button id="play" aria-label="Play">&#9654;</button>
+          <input id="year" type="range" min="0" step="1" value="0"></div>
+        <div class="ticks"><span id="year-min"></span><span id="year-max"></span></div></div>
+    </div>
+    <div class="card map-card">
+      <div id="map-title"></div>
+      <div class="map-wrap">
+        <div id="map"></div>
+        <div class="float" id="layers"><div class="label">Layers</div>
+          <label><input type="checkbox" id="show_mpas" checked> MPA boundaries</label>
+          <label><input type="checkbox" id="show_lat50" checked> 50% density line</label>
+          <label><input type="checkbox" id="show_class"> Restoration class</label>
+          <div id="class-legend" hidden>
+            <div><span class="swatch" style="background:#ed1c25"></span>High</div>
+            <div><span class="swatch" style="background:#ffca18"></span>Mid</div>
+            <div><span class="swatch" style="background:#12d045"></span>Low</div>
+            <div><span class="swatch" style="background:#01a9f3"></span>Very low</div>
+          </div>
+        </div>
+        <div class="float" id="lat50-box"></div>
+        <div class="float" id="legend"><b id="leg-title"></b><div id="leg-bar"></div>
+          <span id="leg-lo"></span><span id="leg-hi" style="float:right"></span></div>
+      </div>
+    </div>
+  </main>
+</div>
+<footer id="footer"></footer>
+
+<dialog id="intro">
+  <h3>How to Use the Map</h3>
+  <ul>
+    <li>Choose a species using the buttons above the map.</li>
+    <li>Select a variable to display: either the modeled kelp density, or one of the underlying environmental predictors.</li>
+    <li>Use the year slider (or press play) to step through projected years.</li>
+    <li>The side panel plots update to summarize the currently displayed layer.</li>
+    <li>The orange dashed line marks the 50% density latitude: half of the species' predicted kelp density lies south of it and half north. The grey dotted line shows where it was in the first projection year.</li>
+  </ul>
+  <form method="dialog"><button>Got it</button></form>
+</dialog>
+<script src="app.js"></script>
+</body>
+</html>

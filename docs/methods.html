@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methods · Kelp Future Preview</title>
+<style>
+  body { margin: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f2f6f6; color: #3d5a5f; }
+  header { background: #0a5c73; color: #fff; padding: 16px 28px; display: flex; align-items: baseline; gap: 16px; }
+  header h1 { margin: 0; font-size: 28px; }
+  header nav { margin-left: auto; }
+  header nav a { color: rgba(255,255,255,.75); margin-left: 18px; font-weight: 600; text-decoration: none; }
+  header nav a.active { color: #fff; }
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(10,92,115,.12);
+          max-width: 860px; margin: 24px auto; padding: 32px 40px; line-height: 1.8; font-size: 17px; }
+  h2 { color: #0a5c73; margin: 0 0 4px; font-size: 30px; }
+  h3 { color: #0a5c73; font-size: 22px; margin-top: 34px; padding-bottom: 4px; border-bottom: 2px solid #d6ecec; }
+  h3 .num { color: #0f8b8d; margin-right: 8px; }
+  h4 { color: #0a5c73; font-size: 18px; margin: 22px 0 4px; }
+  a { color: #0a5c73; }
+  .layer-list { background: #f2f6f6; border-left: 4px solid #0a5c73; border-radius: 4px; padding: 10px 18px; margin: 14px 0; }
+  .metric { display: flex; gap: 12px; margin: 10px 0; }
+  .metric .n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: #0a5c73; color: #fff;
+               font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .classes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+  .classes div { border-radius: 6px; padding: 8px 10px; font-weight: 600; font-size: 15px; border: 2px solid; background: #fff; }
+  .line-key { display: inline-block; width: 34px; vertical-align: middle; margin-right: 6px; }
+  .todo { background: #fdf3e7; border-bottom: 2px dashed #e0913a; padding: 0 4px; }
+  @media (max-width: 700px) { .classes { grid-template-columns: 1fr 1fr; } .card { padding: 24px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kelp Forecasting</h1><span>Projected habitat suitability along the California coast</span>
+  <nav><a href="index.html">About</a><a href="methods.html" class="active">Methods</a><a href="map.html">Maps</a></nav>
+</header>
+
+<div class="card">
+  <h2>Methodology</h2>
+
+  <h3><span class="num">2.1</span>Study species</h3>
+  <p><em>Macrocystis pyrifera</em> (giant kelp) and <em>Nereocystis luetkeana</em> (bull kelp) are the dominant canopy-forming kelps along California's coastal rocky reefs. Together, these two species span the entire California coastline, with bull kelp observed from the Oregon border to Point Conception (35.4°N) and giant kelp from Ano Nuevo (37.1°N) to the Mexico border.</p>
+  <p>The two species differ in morphology, leading to differences in how density is enumerated in observational surveys. Bull kelp is made up of one thick, hollow stipe that extends from the seafloor, where it is attached with a holdfast, to the sea surface, and can grow up to 25 m long. At the end of the stipe is a floating pneumatocyst with several attached blades containing reproductive tissue called sori. Giant kelp individuals can be made up of tens or hundreds of individual stipes attached to a single complex holdfast attached to the seafloor. Density measurements of giant kelp may refer to individual counts or stipe counts.</p>
+
+  <h3><span class="num">2.2</span>Study area</h3>
+  <p>The study region spans ~ 1200 km of coastline from the California Oregon border at 42 degrees latitude down to 33 degrees latitude. The hard substrate on the California coastline provides bedrock and rocky reef for kelps and other algae to anchor. The southern California Bight, specifically, also features a series of eight islands, which provide additional shallow, rocky substrate 20 - 100 km offshore from the mainland. Seafloor terrain variables, including bathymetry and probability of rock, at a 30 m resolution, were obtained from Giraldo-Ospina et al (n.d.). Depth and probability of rock were aggregated from a 30 m resolution to 300 m, commensurate with the average size of a PISCO site, and to avoid spatial autocorrelation.</p>
+
+  <h3><span class="num">2.3</span>Observational data</h3>
+  <p>Kelp and purple urchin densities come from SCUBA surveys by PISCO (118 sites) and Reef Check (13 sites, mostly filling gaps on the north coast). We included sites in our analysis with ten or more survey years and two or more survey years both before and after 2013.</p>
+  <p>The Partnership for Interdisciplinary Studies of Coastal Oceans (PISCO; Carr et al. 2026; Malone et al. 2022), established in 1999, is a research consortium between UC Santa Barbara, UC Santa Cruz, California State Polytechnic University, Humboldt, and the Vantuna Research Group at Occidental College. The aim of PISCO is to conduct long-term monitoring of coastal rocky reefs including the statewide network of Marine Protected Areas.</p>
+  <p>ReefCheck (<a href="https://www.reefcheck.org/kelp-forest-program/" target="_blank" rel="noopener">https://www.reefcheck.org/kelp-forest-program/</a>) is a kelp forest monitoring program focussed on training and citizen science engagement. Densities of giant kelp, bull kelp, and purple urchin (<em>Strongylocentrotus purpuratus</em>), as well as in-situ depth, were collected from each survey site annually by visual counts or observation made with SCUBA.</p>
+
+  <h3><span class="num">2.4</span>Environmental and oceanographic data</h3>
+  <h4>Modeled environmental variables</h4>
+  <p>Environmental and oceanographic data for the California Current System (CCS) came from two sources: a historical hindcast for model training, and downscaled Earth System Model (ESM) output for future projections.</p>
+  <p>Temperature, nitrate, oxygen, and alongshore and cross-shore wind stress from a 3 km Regional Ocean Modelling System (ROMS) coupled with a biogeochemical model (NEMUCSC) specifically parameterized for the CCS.</p>
+  <p>Each variable is summarized as an annual mean, an upwelling-season mean (Feb–May), and a summer mean (Jun–Oct), at the surface, averaged over depth, and at the bottom.</p>
+  <p>The alongshore component is defined as positive in the direction of the coastline angle (generally northward/poleward along the California coast) and negative in the opposite direction (generally southward/equatorward). The cross-shore component is defined as positive offshore (perpendicular to the coast, 90° counter-clockwise from the alongshore direction) and negative onshore.</p>
+  <h4>Projections</h4>
+  <p>For future projections, we obtained monthly forecast (2001-2100) data at a 3 km resolution, dynamically downscaled using ROMS-HIST, for three ESMs (Pozo Buil et al. 2021). The three models were from the Geophysical Fluid Dynamics Laboratory (GFDL) in the United States (Dunne et al., 2012), Institut Pierre-Simon Laplace (IPSL) in France (Dufresne et al., 2013), and Met Office Hadley Center (HAD) in the United Kingdom (Collins et al., 2011).</p>
+
+  <h3><span class="num">2.5</span>Future projections of kelp density</h3>
+  <p>Boosted Regression Trees (hereafter distribution modeling framework) are a machine learning approach that consists of fitting many small regression trees with recursive binary splits, whereby each additional tree is built to improve upon remaining mistakes in the current ensemble, called boosting (Elith et al., 2008). We implemented BRTs via the XGBoost algorithm (Chen &amp; Guestrin, 2016) in the tidymodels (1.3.0.90000) framework (Kuhn &amp; Wickham, 2020). After variable selection, hyperparameter tuning, and reporting model performance, we trained out distribution models for each species and ecoregion combination using the selected drivers and parameters using the full dataset, including both training and testing data.</p>
+  <p>We applied these models to produce projections of kelp density into the future using environmental drivers from the three ROMS-ESMs: ROMS-GFDL, ROMS-HAD, and ROMS-IPSL. We calculated our projections at a 300m resolution, governed by our finest scale predictor, depth.</p>
+
+  <h3><span class="num">2.6</span>Displayed data</h3>
+  <h4>Projected Density and Environmental Drivers</h4>
+  <p>Projections and environmental drivers are displayed on a 300 m grid as the ensemble mean of the three potential future climate simulations (ROMS-GFDL, ROMS-IPSL, and ROMS-HAD), in 5-year steps from the first projection year to 2100. For each species, users can display either projected kelp density or one of the environmental drivers selected for that species’ model.</p>
+  <div class="layer-list">
+    <p style="margin:0 0 6px"><strong>For bull kelp</strong>, the layers are bull kelp density (log), purple urchin density (log), depth, probability of rock, bottom temperature during the upwelling season, surface nitrate in summer, and alongshore and cross-shore wind stress during the upwelling season.</p>
+    <p style="margin:0"><strong>For giant kelp</strong>, the layers are giant kelp density (log), giant kelp stipe density (log), purple urchin density (log), depth, surface and bottom temperature during the upwelling season, bottom nitrate in summer, and alongshore and cross-shore wind stress during the upwelling season.</p>
+  </div>
+
+  <h4>50% density latitude</h4>
+  <p>For each species and year, we calculated the latitude at which 50% of the cumulative projected kelp density in California lies to the south and 50% to the north. On the map, this latitude is shown for the selected year
+    (<svg class="line-key" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#f4a261" stroke-width="4" stroke-dasharray="10 6"/></svg>)
+    alongside its position in the first projection year
+    (<svg class="line-key" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#555555" stroke-width="2" stroke-dasharray="2 6"/></svg>),
+    and the difference between the two is reported in kilometres (1° latitude ≈ 111 km). The change over time is summarized with a linear trend.</p>
+
+  <h4>Marine Protected Areas</h4>
+  <p>Users can toggle on and off the outlines
+    (<svg class="line-key" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#000" stroke-width="1.5"/></svg>)
+    of the California Marine Protected Areas on the map layer. MPA boundaries were obtained from <span class="todo">_______</span>. The MPA layer includes State Marine Reserves (no-take) and State Marine Conservation Areas (limited take), and designation is shown when the user hovers over an MPA.</p>
+
+  <h4>Restoration Site Selection</h4>
+  <p>Restoration classification information comes from Giraldo-Ospina et al., <a href="https://www.sciencedirect.com/science/article/pii/S0006320725000175" target="_blank" rel="noopener"><em>A site selection decision framework for effective kelp restoration</em></a> (2025). The framework classifies 300 × 300 m grid cells using three metrics:</p>
+  <div class="metric"><span class="n">1</span><div>historical stability of kelp (a metric of the historical variability) using the outputs of spatial models of kelp abundance and distribution</div></div>
+  <div class="metric"><span class="n">2</span><div>the amount of kelp lost following a large disturbance (a metric of magnitude of disturbance or the magnitude of the problem) using kelp abundance derived from remote sensing</div></div>
+  <div class="metric"><span class="n">3</span><div>the current state of kelp (a metric of site status close to or at the time of a project implementation)</div></div>
+  <p>Four classification levels are displayed on the map layer: high priority, mid priority, low priority, and very-low priority.</p>
+  <div class="classes">
+    <div style="border-color:#ed1c25; color:#b5121a">High priority</div>
+    <div style="border-color:#ffca18; color:#9a7400">Mid priority</div>
+    <div style="border-color:#12d045; color:#0b7a29">Low priority</div>
+    <div style="border-color:#01a9f3; color:#016a99">Very-low priority</div>
+  </div>
+  <p>Classified site points were rasterized onto a 300 m grid, and adjacent cells of the same class were dissolved into one polygon per class, displayed as toggleable colored outlines.</p>
+</div>
+</body>
+</html>
