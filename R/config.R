@@ -9,6 +9,10 @@ SRC <- "/Users/benjaminbray/KelpApp"
 APP_VERSION <- "0.0.2-static"
 OUT <- "docs/data"
 
+# First year exported. Bands, histograms, trend means and 50% latitudes
+# before this are skipped (same cutoff as first_year in app.R).
+FIRST_YEAR <- 2025
+
 # Copied from app.R (dir paths are relative to SRC)
 species_config <- list(
   bull = list(

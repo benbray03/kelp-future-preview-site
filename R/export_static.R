@@ -11,6 +11,11 @@ stopifnot("Set SRC in R/config.R to your Shiny app folder" = file.exists(file.pa
 
 PAL <- substr(viridis(256, option = "D"), 1, 7)   # same palette as the Shiny app
 dir.create(OUT, recursive = TRUE, showWarnings = FALSE)
+# Clear PNGs from earlier runs so years before FIRST_YEAR don't linger in docs/
+unlink(file.path(OUT, "layers"), recursive = TRUE)
+
+# Band names of a stack that are FIRST_YEAR or later
+keep_years <- function(s) names(s)[as.numeric(names(s)) >= FIRST_YEAR]
 
 # One band -> one PNG. Each pixel is one 300 m cell; NA cells are transparent.
 write_png <- function(r, lo, hi, path) {
@@ -47,7 +52,8 @@ for (sp in names(species_config)) {
   for (v in cfg$vars) {
     message(sp, " / ", v)
     s   <- rast(file.path(SRC, cfg$dir, paste0(v, "_stack.tif")))
-    # One color scale for every year of this variable.
+    s   <- s[[keep_years(s)]]   # drop bands before FIRST_YEAR
+    # One color scale for every exported year of this variable.
     # For the Shiny-style per-year scale, compute rng inside the year loop instead.
     rng <- range(minmax(s, compute = TRUE), na.rm = TRUE)
     if (diff(rng) == 0) rng <- rng + c(-0.5, 0.5)
@@ -65,7 +71,7 @@ for (sp in names(species_config)) {
   }
   write_json(hists, file.path(OUT, paste0("hist_", sp, ".json")), digits = NA)
 
-  yrs <- sort(as.numeric(names(rast(file.path(SRC, cfg$dir, paste0(cfg$response, "_stack.tif"))))))
+  yrs <- sort(as.numeric(keep_years(rast(file.path(SRC, cfg$dir, paste0(cfg$response, "_stack.tif"))))))
   manifest$species[[sp]] <- list(
     label = cfg$label, response = cfg$response, years = yrs,
     vars = lapply(cfg$vars, \(v) list(id = v, label = unname(cfg$var_labels[[v]]))),
@@ -75,11 +81,13 @@ for (sp in names(species_config)) {
 # ---- Part 2: plots, overlays, manifest -------------------------------------
 # Mean over time: same table the Shiny trend plot uses
 tm <- read.csv(file.path(SRC, "trend_means.csv"), stringsAsFactors = FALSE)
+tm <- tm[as.numeric(tm$year) >= FIRST_YEAR, ]
 tm <- tm[order(tm$species, tm$var, tm$year), c("species", "var", "year", "mean_value")]
 write_json(tm, file.path(OUT, "trend_means.json"), digits = NA)
 
 # 50% density latitude, keyed by species id (bull / giant)
 l50 <- read.csv(file.path(SRC, "kelp_lat50_by_year.csv"), stringsAsFactors = FALSE)
+l50 <- l50[as.numeric(l50$year) >= FIRST_YEAR, ]   # baseline line becomes 2025
 lat50 <- lapply(species_config, \(cfg) {
   d <- l50[l50$species == cfg$lat50_species, c("year", "lat_50")]
   d[order(d$year), ]
