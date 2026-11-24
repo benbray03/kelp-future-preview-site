@@ -14,11 +14,9 @@ Chart.js) that GitHub Pages can host for free.
 5. Run `servr::httd("docs")` and open the address it prints.
    (Opening `index.html` by double-clicking won't work: browsers block data loading from local files.)
 
-## Publish (about 10 minutes)
+## Live Site
 
-1. Create a new public GitHub repo and push this folder.
-2. Settings → Pages → Deploy from a branch → `main` / `docs` → Save.
-3. The site appears at `https://<user>.github.io/<repo>/` within a couple of minutes.
+3. The site appears at `https://benbray03.github.io/kelp-future-preview-site/` .
 
 ## Update
 
@@ -29,5 +27,4 @@ show up without any changes to the web code.
 ## Notes
 
 - The color scale is fixed per variable across all years, so playback shows change over time.
-  The Shiny app rescales each year. To match it, compute `rng` inside the year loop in `export_static.R`.
-- Clicking a cell shows an approximate value read back from the PNG color (within 1/255 of the range).
+  The Shiny app rescales each year. 
