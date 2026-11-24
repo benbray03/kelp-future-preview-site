@@ -41,7 +41,7 @@ species_config <- list(
   giant = list(
     label = "Giant Kelp",
     dir = "raster_stacks_3857/giant",
-    response = "macpyr_log",
+    response = "macstipes_log",   # layer selected when giant kelp is chosen
     vars = c(
       "urchin_log", "depth", "taucross_surface_upwelling",
       "temp_surface_upwelling", "no3_deepest_summer",

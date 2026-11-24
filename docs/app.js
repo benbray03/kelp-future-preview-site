@@ -177,7 +177,7 @@ function togglePlay() {
     const i = ys.indexOf(state.year);
     if (i >= ys.length - 1) return stopPlay();
     state.year = ys[i + 1]; $('year').value = i + 1; render();
-  }, 2500);
+  }, 1000);
 }
 function stopPlay() { clearInterval(timer); timer = null; $('play').textContent = '▶'; }
 
