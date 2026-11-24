@@ -34,7 +34,7 @@ species_config <- list(
       temp_deepest_upwelling      = "Temperature, deepest (upwelling)",
       prob_rock                   = "Probability of rock substrate"
     ),
-    bounds = c(lng1 = -124.6, lat1 = 40.4, lng2 = -123.7, lat2 = 42.1),
+    bounds = c(lng1 = -124.6, lat1 = 37.6, lng2 = -122.3, lat2 = 40.9),   # San Francisco to Eureka
     lat50_species = "Bull kelp",
     lat50_lng     = c(-124.8, -120.3)
   ),
