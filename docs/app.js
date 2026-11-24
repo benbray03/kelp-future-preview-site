@@ -6,6 +6,8 @@ let M, map, timer = null, ready = false;
 
 const $ = id => document.getElementById(id);
 const fmt = x => (+x).toFixed(2);
+// Each step is a 5-year window ending in that year: 2025 -> "2021–2025"
+const span = y => `${y - 4}–${y}`;
 const sp = () => M.species[state.species];
 const pngUrl = (year = state.year) => `data/layers/${state.species}/${state.var}_${year}.png`;
 const getJSON = url => cache[url] ??= fetch(url).then(r => { if (!r.ok) throw new Error(url); return r.json(); });
@@ -77,7 +79,7 @@ function setSpecies(id) {
   $('var').innerHTML = s.vars.map(v => `<option value="${v.id}">${v.label}</option>`).join('');
   state.var = s.response; $('var').value = s.response;
   $('year').max = s.years.length - 1; $('year').value = 0; state.year = s.years[0];
-  $('year-min').textContent = s.years[0]; $('year-max').textContent = s.years.at(-1);
+  $('year-min').textContent = span(s.years[0]); $('year-max').textContent = span(s.years.at(-1));
   const b = s.bounds;
   map.fitBounds([[b.lng1, b.lat1], [b.lng2, b.lat2]]);
   render();
@@ -97,8 +99,8 @@ async function render() {
   const i = s.years.indexOf(state.year);
   if (i < s.years.length - 1) loadImage(pngUrl(s.years[i + 1])).catch(() => {});   // preload next step
 
-  $('year-label').textContent = state.year;
-  $('map-title').textContent = `${s.label} — ${v.label} (${state.year})`;
+  $('year-label').textContent = span(state.year);
+  $('map-title').textContent = `${s.label} — ${v.label} (${span(state.year)})`;
   $('hist-label').textContent = `${v.label} — Distribution (Selected Year)`;
   $('trend-label').textContent = `${v.label} — Mean Over Time`;
   $('lat50-label').textContent = `${s.label} — 50% Density Latitude Over Time`;
@@ -154,8 +156,8 @@ async function drawLat50() {
     features: now ? [line(base.lat_50, 'base'), line(now.lat_50, 'now')] : [] });
   const km = now ? Math.round((now.lat_50 - base.lat_50) * 111) : 0;
   $('lat50-box').innerHTML = now ? `<b>50% density latitude</b><br>` +
-    `<span style="color:#d9822b">▬▬</span> ${state.year}: ${now.lat_50.toFixed(2)}°N<br>` +
-    `<span style="color:#555">····</span> ${base.year}: ${base.lat_50.toFixed(2)}°N<br>` +
+    `<span style="color:#d9822b">▬▬</span> ${span(state.year)}: ${now.lat_50.toFixed(2)}°N<br>` +
+    `<span style="color:#555">····</span> ${span(base.year)}: ${base.lat_50.toFixed(2)}°N<br>` +
     `Shift: ${km >= 0 ? '+' : ''}${km} km` : '';
 }
 
@@ -203,7 +205,7 @@ async function showValue(e) {
   });
   const val = L.range[0] + best / 255 * (L.range[1] - L.range[0]);
   new maplibregl.Popup().setLngLat(e.lngLat)
-    .setHTML(`<b>${v.label}</b><br>≈ ${fmt(val)} (${state.year})`).addTo(map);
+    .setHTML(`<b>${v.label}</b><br>≈ ${fmt(val)} (${span(state.year)})`).addTo(map);
 }
 
 init().catch(err => {

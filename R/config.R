@@ -25,7 +25,7 @@ species_config <- list(
       "temp_deepest_upwelling", "prob_rock", "nerlue_log"
     ),
     var_labels = c(
-      nerlue_log                  = "Bull kelp log density",
+      nerlue_log                  = "Bull kelp density (log)",
       urchin_log                  = "Urchin density (log)",
       depth                       = "Depth",
       taucross_surface_upwelling  = "Cross-shore wind stress (upwelling)",
